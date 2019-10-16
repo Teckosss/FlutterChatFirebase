@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_chat_firebase/UserHelper.dart';
+import 'package:flutter_chat_firebase/Helper/UserHelper.dart';
 import 'package:flutter_chat_firebase/authentication.dart';
 
 class LoginPage extends StatefulWidget {
@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
         } else {
           userId = await widget.auth.signUp(_email, _password);
           print('Signed up : $userId');
-          UserHelper().createUser(userId, _username, "");
+          UserHelper().createUser(userId, _username, "", null);
         }
         if (userId.length > 0 && userId != null) {
           print('userId is not null');
@@ -74,7 +74,8 @@ class _LoginPageState extends State<LoginPage> {
             _errorMessage = "The password is invalid.";
             break;
           case "ERROR_EMAIL_ALREADY_IN_USE":
-            _errorMessage = "The email address is already in use by another account.";
+            _errorMessage =
+                "The email address is already in use by another account.";
             break;
           default:
             _errorMessage = "An error occured, please try again later.";
@@ -118,25 +119,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Widget _showBody() {
-    return Container(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              _showLogo(),
-              _showEmailField(),
-              _showPasswordField(),
-              _showUsernameField(),
-              _showLoginButton(),
-              _showRegisterButton(),
-              _showErrorMessage(),
-            ],
-          ),
-        ));
-  }
-
   Widget _showLogo() {
     return Hero(
       tag: 'logo',
@@ -153,12 +135,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _showCircularProgress() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Stack(children: <Widget>[
+        Opacity(
+          opacity: 0.3,
+          child: ModalBarrier(
+            dismissible: false,
+            color: Colors.grey,
+          ),
+        ),
+        Center(child: CircularProgressIndicator())
+      ]);
     }
-    return Container(
-      height: 0.0,
-      width: 0.0,
-    );
+    return Container(height: 0.0);
   }
 
   Widget _showEmailField() {
@@ -260,15 +248,49 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _showBody() {
+    return Container(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              _showLogo(),
+              _showEmailField(),
+              _showPasswordField(),
+              _showUsernameField(),
+              _showLoginButton(),
+              _showRegisterButton(),
+              _showErrorMessage(),
+            ],
+          ),
+        ));
+  }
+
+  List<Widget> _buildBody() {
+    var listWidget = List<Widget>();
+
+    SingleChildScrollView scrollView = SingleChildScrollView(
+      child: _showBody(),
+    );
+
+    listWidget.add(scrollView);
+
+    var progress = _showCircularProgress();
+
+    listWidget.add(progress);
+    return listWidget;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Login'),
         ),
-        body: SingleChildScrollView(
+        body: Center(
             child: Stack(
-          children: <Widget>[_showBody(), _showCircularProgress()],
+          children: _buildBody(),
         )));
   }
 }

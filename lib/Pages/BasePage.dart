@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_firebase/Helper/UserHelper.dart';
+import 'package:flutter_chat_firebase/Models/User.dart';
+import 'package:flutter_chat_firebase/Pages/ChatsPage.dart';
 import 'package:flutter_chat_firebase/Pages/FriendsPage.dart';
-import 'package:flutter_chat_firebase/Pages/MessagesPage.dart';
 import 'package:flutter_chat_firebase/Pages/ProfilePage.dart';
 import 'package:flutter_chat_firebase/authentication.dart';
 
@@ -15,15 +17,27 @@ class BasePage extends StatefulWidget {
   _BasePageState createState() => _BasePageState();
 }
 
+enum UserDataStatus {
+  WAITING,
+  OK,
+}
+
 class _BasePageState extends State<BasePage> {
   var _index;
+  User currentUser;
+  UserDataStatus userDataStatus;
 
-  Widget _showMessagesPage() {
-    return MessagesPage();
+  Widget _showChatsPage() {
+    return ChatsPage(
+      currentUser: currentUser,
+    );
   }
 
   Widget _showFriendsPage() {
-    return FriendsPage();
+    return FriendsPage(
+      userId: widget.userId,
+      currentUser: currentUser,
+    );
   }
 
   Widget _showProfilePage() {
@@ -44,6 +58,18 @@ class _BasePageState extends State<BasePage> {
     super.initState();
     print('BasePage, current user uid : ${widget.userId}');
     _index = 0;
+    userDataStatus =
+        currentUser == null ? UserDataStatus.WAITING : UserDataStatus.OK;
+    _retrieveCurrentUser();
+  }
+
+  void _retrieveCurrentUser() async {
+    await UserHelper().getUser(widget.userId).then((user) {
+      setState(() {
+        currentUser = User.fromMap(user.data, user.documentID);
+        userDataStatus = UserDataStatus.OK;
+      });
+    });
   }
 
   Widget _showBottomNavBar() {
@@ -78,7 +104,7 @@ class _BasePageState extends State<BasePage> {
         });
   }
 
-  Widget _showHeroLogo(){
+  Widget _showHeroLogo() {
     return Hero(
       tag: 'logo',
       child: Padding(
@@ -92,27 +118,44 @@ class _BasePageState extends State<BasePage> {
     );
   }
 
+  Widget _buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget _widgetToDisplay;
-    switch (_index) {
-      case 0:
-        _widgetToDisplay = _showMessagesPage();
+    switch (userDataStatus) {
+      case UserDataStatus.WAITING:
+        return _buildWaitingScreen();
         break;
-      case 1:
-        _widgetToDisplay = _showFriendsPage();
-        break;
-      case 2:
-        _widgetToDisplay = _showProfilePage();
-        break;
+      case UserDataStatus.OK:
+        Widget _widgetToDisplay;
+        switch (_index) {
+          case 0:
+            _widgetToDisplay = _showChatsPage();
+            break;
+          case 1:
+            _widgetToDisplay = _showFriendsPage();
+            break;
+          case 2:
+            _widgetToDisplay = _showProfilePage();
+            break;
+        }
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Flutter Chat'),
+            leading: _showHeroLogo(),
+          ),
+          body: _widgetToDisplay,
+          bottomNavigationBar: _showBottomNavBar(),
+        );
+      default:
+        return _buildWaitingScreen();
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Chat'),
-        leading: _showHeroLogo(),
-      ),
-      body: _widgetToDisplay,
-      bottomNavigationBar: _showBottomNavBar(),
-    );
   }
 }
