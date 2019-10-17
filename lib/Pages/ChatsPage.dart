@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase/Helper/RoomHelper.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
+import 'package:flutter_chat_firebase/Pages/MessagesPage.dart';
 
 class ChatsPage extends StatefulWidget {
   ChatsPage({this.currentUser});
@@ -14,6 +15,17 @@ class ChatsPage extends StatefulWidget {
 }
 
 class _ChatsPageState extends State<ChatsPage> {
+  void _navigateToMessagesPage(User userToChatWith, String roomId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MessagesPage(
+                  currentUser: widget.currentUser,
+                  userToChat: userToChatWith,
+                  roomId: roomId,
+                )));
+  }
+
   Widget _buildListView() {
     return StreamBuilder<QuerySnapshot>(
       stream:
@@ -24,7 +36,7 @@ class _ChatsPageState extends State<ChatsPage> {
         }
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           default:
             if (snapshot.data.documents.length > 0) {
               return Padding(
@@ -39,7 +51,13 @@ class _ChatsPageState extends State<ChatsPage> {
                     return Card(
                       elevation: 2.0,
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          print(
+                              'Chats Page document id clicked : ${document.documentID}');
+                          _navigateToMessagesPage(
+                              User.fromMap(document.data, document.documentID),
+                              document.documentID);
+                        },
                         child: ListTile(
                           leading: ClipRRect(
                               borderRadius: BorderRadius.circular(100.0),
