@@ -6,6 +6,7 @@ import 'package:flutter_chat_firebase/Helper/MessageHelper.dart';
 import 'package:flutter_chat_firebase/Models/Message.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
 import 'package:flutter_chat_firebase/const.dart';
+import 'package:intl/intl.dart';
 
 class MessagesPage extends StatefulWidget {
   MessagesPage({this.currentUser, this.userToChat, this.roomId});
@@ -89,6 +90,8 @@ class _MessagesPageState extends State<MessagesPage> {
           default:
             if (snapshot.data.documents.length > 0) {
               return ListView.builder(
+                shrinkWrap: true,
+                reverse: true,
                 padding: EdgeInsets.all(10.0),
                 itemBuilder: (context, index) => _buildItem(index,
                     Message.fromMap(snapshot.data.documents[index].data)),
@@ -105,41 +108,97 @@ class _MessagesPageState extends State<MessagesPage> {
   }
 
   Widget _buildItem(int index, Message message) {
+    //print("BuildItem message data : $message");
     if (widget.currentUser.userId == message.fromUser) {
       // Current user is sender, need to align RIGHT
-      return Row(
+      return Column(
         children: <Widget>[
-          Container(
-              child: Text(message.messageText,style: TextStyle(color: Colors.white),),
-              padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-              margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              decoration: BoxDecoration(
-                  color: Colors.blue[400],
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8.0),
-                      topRight: Radius.circular(8.0),
-                      bottomLeft: Radius.circular(8.0))))
+          Row(
+            children: <Widget>[
+              Flexible(
+                flex: 3,
+                child: Container(),
+              ),
+              Flexible(
+                  flex: 7,
+                  child: Container(
+                      child: Text(
+                        message.messageText,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                      margin: EdgeInsets.only(bottom: 5.0),
+                      decoration: BoxDecoration(
+                          color: Colors.blue[400],
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0),
+                              bottomLeft: Radius.circular(8.0))))),
+            ],
+            mainAxisAlignment: MainAxisAlignment.end,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: 10.0),
+                child: Text(
+                  _displayDateTime(message.sendAt),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                ),
+              )
+            ],
+          )
         ],
-        mainAxisAlignment: MainAxisAlignment.end,
       );
     } else {
       // Current user is NOT sender, need to align LEFT
-      return Row(
+      return Column(
         children: <Widget>[
-          Container(
-              child: Text(message.messageText),
-              padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-              margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-              decoration: BoxDecoration(
-                  color: liteGreyColor,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8.0),
-                      topRight: Radius.circular(8.0),
-                      bottomRight: Radius.circular(8.0))))
+          Row(
+            children: <Widget>[
+              Flexible(
+                flex: 7,
+                child: Container(
+                    child: Text(message.messageText),
+                    padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                    margin: EdgeInsets.only(bottom: 5.0),
+                    decoration: BoxDecoration(
+                        color: liteGreyColor,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8.0),
+                            topRight: Radius.circular(8.0),
+                            bottomRight: Radius.circular(8.0)))),
+              ),
+              Flexible(
+                flex: 3,
+                child: Container(),
+              )
+            ],
+            mainAxisAlignment: MainAxisAlignment.start,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: 10.0),
+                child: Text(
+                  _displayDateTime(message.sendAt),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                ),
+              )
+            ],
+          )
         ],
-        mainAxisAlignment: MainAxisAlignment.start,
       );
     }
+  }
+
+  String _displayDateTime(Timestamp timestamp) {
+    DateFormat dateFormat = DateFormat(
+      "dd/MM/yy HH:mm",
+    );
+    return dateFormat.format(timestamp.toDate());
   }
 
   List<Widget> _buildBody() {

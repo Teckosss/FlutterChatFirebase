@@ -24,7 +24,7 @@ class MessageHelper {
 
   Stream<QuerySnapshot> getAllMessagesInRoom(String roomId) => MessageHelper()
       .getRoomMessagesCollection(roomId)
-      .orderBy('sendAt', descending: false)
+      .orderBy('sendAt', descending: true)
       .limit(20)
       .snapshots();
 }
