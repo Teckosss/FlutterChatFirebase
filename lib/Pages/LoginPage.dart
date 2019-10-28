@@ -120,17 +120,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _showLogo() {
-    return Hero(
-      tag: 'logo',
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
-        child: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/images/flutter_logo.png'),
-        ),
-      ),
-    );
+    return FlutterLogo(size: 150.0,);
   }
 
   Widget _showCircularProgress() {
@@ -151,14 +141,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _showEmailField() {
     return Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 0.0),
         child: TextFormField(
           maxLines: 1,
           keyboardType: TextInputType.emailAddress,
           autofocus: false,
           autocorrect: false,
           decoration: InputDecoration(
-              hintText: 'Email',
+              labelText: 'Email',
+              hintText: 'Type your email',
               icon: Icon(
                 Icons.email,
                 color: Colors.grey,
@@ -177,7 +168,8 @@ class _LoginPageState extends State<LoginPage> {
         autofocus: false,
         autocorrect: false,
         decoration: InputDecoration(
-            hintText: 'Password',
+            labelText: 'Password',
+            hintText: 'Type your password',
             icon: Icon(
               Icons.lock,
               color: Colors.grey,
@@ -197,7 +189,8 @@ class _LoginPageState extends State<LoginPage> {
           autofocus: false,
           autocorrect: false,
           decoration: InputDecoration(
-              hintText: 'Username',
+              labelText: 'Username',
+              hintText: 'Type your username',
               icon: Icon(
                 Icons.face,
                 color: Colors.grey,

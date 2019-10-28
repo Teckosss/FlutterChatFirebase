@@ -41,7 +41,10 @@ class _BasePageState extends State<BasePage> {
   }
 
   Widget _showProfilePage() {
-    return ProfilePage(signOut: signOut);
+    return ProfilePage(
+      signOut: signOut,
+      currentUser: currentUser,
+    );
   }
 
   signOut() async {

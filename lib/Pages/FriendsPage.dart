@@ -8,6 +8,7 @@ import 'package:flutter_chat_firebase/Helper/UserHelper.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
 import 'package:flutter_chat_firebase/Pages/AddContactsPage.dart';
 import 'package:flutter_chat_firebase/Pages/MessagesPage.dart';
+import 'package:flutter_chat_firebase/constants.dart';
 
 class FriendsPage extends StatefulWidget {
   FriendsPage({this.userId, this.currentUser});
@@ -42,6 +43,9 @@ class _FriendsPageState extends State<FriendsPage> {
   void _startChatWithContact(User userToChatWith) {
     print(userToChatWith.toString());
     print('Current user :${widget.currentUser.toString()}');
+
+    String roomId;
+
     RoomHelper()
         .checkIfUserIsAlreadyInRoomWithSpecificUser(
             widget.userId, userToChatWith.userId)
@@ -50,9 +54,12 @@ class _FriendsPageState extends State<FriendsPage> {
         // User is already in room chat with this user
         // Open the corresponding chat?
         print('These two users are already in chat rooms together');
+        for (DocumentSnapshot document in results.documents) {
+          roomId = document.documentID;
+        }
       } else {
         print('These two users are NOT in chat rooms together');
-        var roomId = MessageHelper().createMessageDocument().documentID;
+        roomId = MessageHelper().createMessageDocument().documentID;
         print('room id $roomId');
         if (currentUser.rooms == null) {
           currentUser.rooms = Map<String, bool>();
@@ -72,17 +79,18 @@ class _FriendsPageState extends State<FriendsPage> {
         ContactHelper().updateContact(widget.userId, userToChatWith);
         ContactHelper().updateContact(userToChatWith.userId, currentUser);
       }
-      _navigateToMessagesPage(userToChatWith);
+      _navigateToMessagesPage(userToChatWith, roomId);
     });
   }
 
-  void _navigateToMessagesPage(User userToChatWith) {
+  void _navigateToMessagesPage(User userToChatWith, String roomId) {
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => MessagesPage(
                   currentUser: currentUser,
                   userToChat: userToChatWith,
+                  roomId: roomId,
                 )));
   }
 
@@ -131,7 +139,7 @@ class _FriendsPageState extends State<FriendsPage> {
                                           child: CachedNetworkImage(
                                             height: 50.0,
                                             imageUrl: imageUrl == null
-                                                ? 'https://picsum.photos/250?image=9' // REPLACE THIS PLACEHOLDER
+                                                ? NO_IMAGE_PROFILE // REPLACE THIS PLACEHOLDER
                                                 : document['userPicture'],
                                             placeholder: (context, url) =>
                                                 CircularProgressIndicator(),

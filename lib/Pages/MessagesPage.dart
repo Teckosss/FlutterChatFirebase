@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase/Helper/MessageHelper.dart';
 import 'package:flutter_chat_firebase/Models/Message.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
-import 'package:flutter_chat_firebase/const.dart';
+import 'package:flutter_chat_firebase/constants.dart';
 import 'package:intl/intl.dart';
 
 class MessagesPage extends StatefulWidget {
@@ -25,6 +25,7 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   void initState() {
     super.initState();
+    //print('Room id received : ${widget.roomId}');
   }
 
   void _sendMessage(String messageText) {
@@ -75,7 +76,7 @@ class _MessagesPageState extends State<MessagesPage> {
   }
 
   Widget _displayListView() {
-    return Flexible(
+    return Flexible(fit: FlexFit.tight,
         child: StreamBuilder(
       stream: MessageHelper().getAllMessagesInRoom(widget.roomId),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -164,7 +165,7 @@ class _MessagesPageState extends State<MessagesPage> {
                     padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                     margin: EdgeInsets.only(bottom: 5.0),
                     decoration: BoxDecoration(
-                        color: liteGreyColor,
+                        color: LITE_GREY_COLOR,
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(8.0),
                             topRight: Radius.circular(8.0),
