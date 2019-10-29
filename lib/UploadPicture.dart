@@ -9,7 +9,6 @@ abstract class BaseUpload {
 
 class Upload extends BaseUpload {
 
-
   @override
   Future<String> uploadProfilePic(String userId, File imageFile) async {
     var uuid = Uuid();
