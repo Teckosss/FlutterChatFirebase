@@ -10,6 +10,7 @@ const double ELEVATION_5 = 5.0;
 
 const String NO_IMAGE_PROFILE = "https://picsum.photos/250?image=9";
 
+const double PADDING_SMALL_4 = 4.0;
 const double PADDING_SMALL_8 = 8.0;
 const double PADDING_NORMAL_16 = 16.0;
 

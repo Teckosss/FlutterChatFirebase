@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_firebase/Helper/UserHelper.dart';
 import 'package:flutter_chat_firebase/authentication.dart';
+import 'package:flutter_chat_firebase/constants.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({this.auth, this.onSignedIn});
@@ -120,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _showLogo() {
-    return FlutterLogo(size: 150.0,);
+    return FlutterLogo(size: IMAGE_SIZE_BIG,);
   }
 
   Widget _showCircularProgress() {
@@ -209,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 35.0, 0.0, 0.0),
       child: MaterialButton(
-        elevation: 5.0,
+        elevation: ELEVATION_5,
         minWidth: 200.0,
         height: 42.0,
         color: Colors.blue,
@@ -243,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _showBody() {
     return Container(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(PADDING_NORMAL_16),
         child: Form(
           key: _formKey,
           child: Column(

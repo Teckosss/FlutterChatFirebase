@@ -3,7 +3,7 @@ import 'package:flutter_chat_firebase/Models/User.dart';
 
 class ContactHelper {
   static const String _COLLECTION_NAME = 'contacts';
-  static const String _SUB_COLLECTION_NAME = 'userContacts';
+  static const String SUB_COLLECTION_NAME = 'userContacts';
 
   CollectionReference getContactsCollection() {
     return Firestore.instance.collection(_COLLECTION_NAME);
@@ -13,14 +13,14 @@ class ContactHelper {
     return ContactHelper()
         .getContactsCollection()
         .document(userId)
-        .collection(_SUB_COLLECTION_NAME);
+        .collection(SUB_COLLECTION_NAME);
   }
 
   void createUserContact(String fromUser, User toUser) {
     ContactHelper()
         .getContactsCollection()
         .document(fromUser)
-        .collection(_SUB_COLLECTION_NAME)
+        .collection(SUB_COLLECTION_NAME)
         .document(toUser.userId)
         .setData(toUser.toJson(), merge: true);
   }
@@ -39,6 +39,14 @@ class ContactHelper {
       ContactHelper()
           .getUserContactCollection(userId)
           .where('uid', isEqualTo: userIdToFind);
+
+  Future<QuerySnapshot> getAllContactsWhoAreFriendsWithUser(String userId) {
+    var db = Firestore.instance;
+    return db
+        .collectionGroup(SUB_COLLECTION_NAME)
+        .where('uid', isEqualTo: userId)
+        .getDocuments();
+  }
 
   void updateContact(String userId, User userToUpdate) => ContactHelper()
       .getUserContactCollection(userId)

@@ -113,7 +113,7 @@ class _FriendsPageState extends State<FriendsPage> {
             default:
               if (snapshot.data.documents.length > 0) {
                 return Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(PADDING_NORMAL_16),
                     child: ListView(
                       shrinkWrap: true,
                       children: snapshot.data.documents
@@ -125,19 +125,20 @@ class _FriendsPageState extends State<FriendsPage> {
                             ? null
                             : document['userPicture'];
                         return Card(
+                            elevation: ELEVATION_5,
                             child: InkWell(
                                 onTap: () {
                                   _startChatWithContact(User.fromMap(
                                       document.data, document.documentID));
                                 },
                                 child: Padding(
-                                    padding: EdgeInsets.all(4.0),
+                                    padding: EdgeInsets.all(PADDING_SMALL_4),
                                     child: ListTile(
                                       leading: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(100.0),
                                           child: CachedNetworkImage(
-                                            height: 50.0,
+                                            height: IMAGE_SIZE_SMALL,
                                             imageUrl: imageUrl == null
                                                 ? NO_IMAGE_PROFILE // REPLACE THIS PLACEHOLDER
                                                 : document['userPicture'],
@@ -167,7 +168,7 @@ class _FriendsPageState extends State<FriendsPage> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(PADDING_NORMAL_16),
             child: FloatingActionButton(
               onPressed: () {
                 _navigateToAddContactPage();

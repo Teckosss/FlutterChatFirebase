@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase/Helper/RoomHelper.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
 import 'package:flutter_chat_firebase/Pages/MessagesPage.dart';
+import 'package:flutter_chat_firebase/constants.dart';
 
 class ChatsPage extends StatefulWidget {
   ChatsPage({this.currentUser});
@@ -40,7 +41,7 @@ class _ChatsPageState extends State<ChatsPage> {
           default:
             if (snapshot.data.documents.length > 0) {
               return Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(PADDING_NORMAL_16),
                 child: ListView(
                   shrinkWrap: true,
                   children:
@@ -49,7 +50,7 @@ class _ChatsPageState extends State<ChatsPage> {
                         ? null
                         : document['userPicture'];
                     return Card(
-                      elevation: 2.0,
+                      elevation: ELEVATION_5,
                       child: InkWell(
                         onTap: () {
                           print(
@@ -80,7 +81,7 @@ class _ChatsPageState extends State<ChatsPage> {
               );
             } else {
               return Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(PADDING_NORMAL_16),
                 child: Text('You don\'t any chats yet'),
               );
             }

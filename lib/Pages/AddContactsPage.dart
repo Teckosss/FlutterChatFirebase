@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_firebase/Helper/ContactHelper.dart';
 import 'package:flutter_chat_firebase/Helper/UserHelper.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
+import 'package:flutter_chat_firebase/constants.dart';
 
 class AddContactsPage extends StatefulWidget {
   AddContactsPage({this.userId});
@@ -80,7 +81,7 @@ class _AddContactsPageState extends State<AddContactsPage> {
             default:
               if (snapshot.data.documents.length > 0) {
                 return Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 0.0),
+                    padding: EdgeInsets.only(top: PADDING_SMALL_8),
                     child: ListView(
                       shrinkWrap: true,
                       children: snapshot.data.documents
@@ -92,7 +93,7 @@ class _AddContactsPageState extends State<AddContactsPage> {
                           return Center(
                               child: Padding(
                                   padding:
-                                      EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                                      EdgeInsets.only(top: 30.0),
                                   child: Text('No results')));
                         }
 
@@ -115,16 +116,16 @@ class _AddContactsPageState extends State<AddContactsPage> {
                                     bool _isFriend =
                                         contact.data.documents.length > 0;
                                     return Card(
-                                        elevation: 1.5,
+                                        elevation: ELEVATION_5,
                                         child: Padding(
-                                          padding: EdgeInsets.all(4.0),
+                                          padding: EdgeInsets.all(PADDING_SMALL_4),
                                           child: ListTile(
                                             leading: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(
                                                         100.0),
                                                 child: CachedNetworkImage(
-                                                  height: 50.0,
+                                                  height: IMAGE_SIZE_SMALL,
                                                   imageUrl: imageUrl == null
                                                       ? 'https://picsum.photos/250?image=9' // REPLACE THIS PLACEHOLDER
                                                       : document['userPicture'],
@@ -148,8 +149,7 @@ class _AddContactsPageState extends State<AddContactsPage> {
                               } else {
                                 return Center(
                                     child: Padding(
-                                        padding: EdgeInsets.fromLTRB(
-                                            0.0, 30.0, 0.0, 0.0),
+                                        padding: EdgeInsets.only(top: 30.0),
                                         child: Text('No results')));
                               }
                             });
@@ -158,7 +158,7 @@ class _AddContactsPageState extends State<AddContactsPage> {
               } else {
                 return Center(
                     child: Padding(
-                        padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                        padding: EdgeInsets.only(top: 30.0),
                         child: Text('No results')));
               }
           }
@@ -185,9 +185,9 @@ class _AddContactsPageState extends State<AddContactsPage> {
 
   Widget _showSearchField() {
     return Card(
-      elevation: 5.0,
+      elevation: ELEVATION_5,
       child: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(PADDING_SMALL_8),
           child: TextField(
             controller: _queryController,
             autocorrect: false,
@@ -226,7 +226,7 @@ class _AddContactsPageState extends State<AddContactsPage> {
                   icon: Icon(Icons.arrow_back_ios),
                   onPressed: () => Navigator.pop(context))),
       body: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(PADDING_NORMAL_16),
           child: Column(
             children: _buildBody(),
           )),

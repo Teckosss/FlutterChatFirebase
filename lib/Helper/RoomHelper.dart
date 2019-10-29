@@ -3,7 +3,7 @@ import 'package:flutter_chat_firebase/Models/User.dart';
 
 class RoomHelper {
   static const String _COLLECTION_NAME = "rooms";
-  static const String _SUB_COLLECTION_NAME = "userRooms";
+  static const String SUB_COLLECTION_NAME = "userRooms";
 
   CollectionReference getRoomsCollection() =>
       Firestore.instance.collection(_COLLECTION_NAME);
@@ -11,13 +11,13 @@ class RoomHelper {
   CollectionReference getRoomsCollectionForUser(String userId) => RoomHelper()
       .getRoomsCollection()
       .document(userId)
-      .collection(_SUB_COLLECTION_NAME);
+      .collection(SUB_COLLECTION_NAME);
 
   void createRoomForUser(String userId, User userToAdd, String roomId) =>
       RoomHelper()
           .getRoomsCollection()
           .document(userId)
-          .collection(_SUB_COLLECTION_NAME)
+          .collection(SUB_COLLECTION_NAME)
           .document(roomId)
           .setData(userToAdd.toJson(), merge: true);
 
@@ -29,4 +29,12 @@ class RoomHelper {
       RoomHelper()
           .getRoomsCollectionForUser(userId)
           .where('uid', isEqualTo: userIdToFind).getDocuments();
+
+  Future<QuerySnapshot> getAllRoomWhereUserIs(String userId) {
+    var db = Firestore.instance;
+    return db
+        .collectionGroup(SUB_COLLECTION_NAME)
+        .where('uid', isEqualTo: userId)
+        .getDocuments();
+  }
 }

@@ -1,7 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_firebase/Helper/ContactHelper.dart';
+import 'package:flutter_chat_firebase/Helper/RoomHelper.dart';
+import 'package:flutter_chat_firebase/Helper/UserHelper.dart';
 import 'package:flutter_chat_firebase/Models/User.dart';
+import 'package:flutter_chat_firebase/UploadPicture.dart';
 import 'package:flutter_chat_firebase/constants.dart';
+import 'package:image_picker_modern/image_picker_modern.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({this.signOut, this.currentUser});
@@ -14,22 +20,43 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  var _downloadUrl;
+
+  Future _selectImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    print('Image selected : $image');
+    if (image != null) {
+      _downloadUrl =
+          await Upload().uploadProfilePic(widget.currentUser.userId, image);
+      print('URL received : $_downloadUrl');
+      if (_downloadUrl != null) {
+        widget.currentUser.userPicture = _downloadUrl;
+        _updateEveryDocument(widget.currentUser);
+      }
+      setState(() {});
+    }
+  }
+
   Widget _showImageProfile() {
-    String _imageUrl = widget.currentUser.userPicture == ""
+    var _imageUrl = widget.currentUser.userPicture == ""
         ? NO_IMAGE_PROFILE
         : widget.currentUser.userPicture;
+
     return Card(
         elevation: ELEVATION_5,
         child: InkWell(
-            onTap: () {},
+            onTap: () {
+              _selectImage();
+            },
             child: Padding(
               padding: EdgeInsets.only(
                   top: PADDING_SMALL_8, bottom: PADDING_SMALL_8),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100.0),
+              child: Container(
+                height: IMAGE_SIZE_BIG,
                 child: CachedNetworkImage(
                   height: IMAGE_SIZE_BIG,
-                  imageUrl: _imageUrl,
+                  imageUrl: _downloadUrl == null ? _imageUrl : _downloadUrl,
+                  placeholder: (context, url) => CircularProgressIndicator(),
                 ),
               ),
             )));
@@ -91,24 +118,6 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  /*Widget _showSignOutButton() {
-    return Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-        child: MaterialButton(
-          elevation: 5.0,
-          height: 42.0,
-          color: Colors.blue,
-          minWidth: 200.0,
-          child: Text(
-            'Sign Out',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            widget.signOut();
-          },
-        ));
-  }*/
-
   List<Widget> _buildBody() {
     var listWidgets = List<Widget>();
 
@@ -127,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(PADDING_NORMAL_16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: _buildBody(),
@@ -138,5 +147,18 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     print("Current user : ${widget.currentUser}");
+  }
+
+  // This function will try to update User, Contact and Room database collection
+  void _updateEveryDocument(User userToUpdate) async {
+    List<DocumentSnapshot> listContacts = await ContactHelper()
+        .getAllContactsWhoAreFriendsWithUser(widget.currentUser.userId)
+        .then((docs) => docs.documents);
+    List<DocumentSnapshot> listRooms = await RoomHelper()
+        .getAllRoomWhereUserIs(widget.currentUser.userId)
+        .then((docs) => docs.documents);
+    listRooms.forEach((doc) => print('Doc received : ${doc.documentID}'));
+    UserHelper().updateUserPicture(
+        widget.currentUser.userId, widget.currentUser, listContacts, listRooms);
   }
 }
